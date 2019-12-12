@@ -64,4 +64,6 @@ public class ProdutoMasculinoResource {
 			return ResponseEntity.ok().body(listDto);		
 	}
 	
+	
+	
 }

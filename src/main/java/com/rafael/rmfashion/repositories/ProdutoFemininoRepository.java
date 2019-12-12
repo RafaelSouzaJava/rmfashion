@@ -12,7 +12,7 @@ import com.rafael.rmfashion.domain.ProdutoFeminino;
 @Repository
 public interface ProdutoFemininoRepository extends JpaRepository<ProdutoFeminino, Integer> {
 
-
+	
 	
 }
 

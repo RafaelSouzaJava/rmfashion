@@ -21,29 +21,31 @@ import com.rafael.rmfashion.services.exceptions.ObjectNotFoundException;
 public class ProdutoMasculinoService {
 	
 	@Autowired
-	private ProdutoMasculinoRepository repository;
+	private ProdutoMasculinoRepository produtoMasculinorepository;
+	
+
 
 	public ProdutoMasculino buscar(Integer id) {
-		Optional<ProdutoMasculino> obj = repository.findById(id);
+		Optional<ProdutoMasculino> obj = produtoMasculinorepository.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException("Produto Feminino Não Encontrado! Id: " +id + ", Tipo: "+ProdutoMasculino.class.getName()));
 	}
 	
 	@Transactional
 	public ProdutoMasculino insert(ProdutoMasculino obj) {
 		obj.setId(null);
-		return repository.save(obj);
+		return produtoMasculinorepository.save(obj);
 	}
 	
 	public ProdutoMasculino update(ProdutoMasculino obj) {
 		ProdutoMasculino newObj = buscar(obj.getId());
 		updateProduto(newObj, obj);
-		return repository.save(newObj);
+		return produtoMasculinorepository.save(newObj);
 	}
 	
 	public void delete(Integer id) {
 		buscar(id);
 		try {
-			repository.deleteById(id);
+			produtoMasculinorepository.deleteById(id);
 		} 
 		catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityException("Não é Possivel excluir um Produto que tenha pedidos");
@@ -51,7 +53,7 @@ public class ProdutoMasculinoService {
 	}
 	
 	public List<ProdutoMasculino> buscarTodos(){
-		return repository.findAll();
+		return produtoMasculinorepository.findAll();
 	}
 	
 	public ProdutoMasculino fromDTO(ProdutoMasculinoDTO objDto) {
@@ -64,6 +66,8 @@ public class ProdutoMasculinoService {
 		produtoMaculino.getCategoriasMasculino().add(catMasc);
 		return produtoMaculino;
 	}
+	
+		
 	
 	private void updateProduto(ProdutoMasculino newObj, ProdutoMasculino obj) {
 		if (obj.getNome() != null) {

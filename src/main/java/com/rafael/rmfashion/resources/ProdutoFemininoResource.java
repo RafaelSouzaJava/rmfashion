@@ -61,6 +61,7 @@ public class ProdutoFemininoResource {
 				.collect(Collectors.toList());
 		return ResponseEntity.ok().body(listDto);
 	}
-
+	
+	
 
 }

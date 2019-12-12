@@ -7,6 +7,9 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.rafael.rmfashion.domain.ProdutoVariado;
@@ -14,6 +17,7 @@ import com.rafael.rmfashion.domain.Variado;
 import com.rafael.rmfashion.dto.ProdutoVariadoDTO;
 import com.rafael.rmfashion.dto.ProdutoVariadoNewDTO;
 import com.rafael.rmfashion.repositories.ProdutoVariadoRepository;
+import com.rafael.rmfashion.repositories.VariadoRepository;
 import com.rafael.rmfashion.services.exceptions.DataIntegrityException;
 import com.rafael.rmfashion.services.exceptions.ObjectNotFoundException;
 
@@ -22,6 +26,9 @@ public class ProdutoVariadoService {
 	
 	@Autowired
 	private ProdutoVariadoRepository repository;
+	
+	@Autowired
+	private VariadoRepository variadoRepository;
 
 	public ProdutoVariado buscar(Integer id) {
 		Optional<ProdutoVariado> obj = repository.findById(id);
@@ -63,6 +70,13 @@ public class ProdutoVariadoService {
 		Variado variado = new Variado(objDto.getVariadoId(), null);
 		produtoVariado.getVariados().add(variado);
 		return produtoVariado;
+	}
+	
+	public Page<ProdutoVariado> search(String nome, List<Integer> ids, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		List<Variado> categorias = variadoRepository.findAllById(ids);
+		return repository.findDistinctByNomeContainingAndCategoriasIn(nome, categorias, pageRequest);	
+
 	}
 	
 	private void updateProduto(ProdutoVariado newObj, ProdutoVariado obj) {
