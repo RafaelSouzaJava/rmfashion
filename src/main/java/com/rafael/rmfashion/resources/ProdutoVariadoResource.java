@@ -2,7 +2,6 @@ package com.rafael.rmfashion.resources;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -58,28 +57,21 @@ public class ProdutoVariadoResource {
 		return ResponseEntity.noContent().build();	
 	}
 	
-	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<ProdutoVariadoDTO>> buscarTodos(){
-			List<ProdutoVariado> list = service.buscarTodos();
-			List<ProdutoVariadoDTO> listDto = list.stream().map(obj -> new ProdutoVariadoDTO(obj)).collect(Collectors.toList());
-			return ResponseEntity.ok().body(listDto);		
-	}
+
 	
 	@RequestMapping(method=RequestMethod.GET)
-
 	public ResponseEntity<Page<ProdutoVariadoDTO>> findPage(
 			@RequestParam(value="nome", defaultValue="") String nome, 
-			@RequestParam(value="categorias", defaultValue="") String categorias, 
+			@RequestParam(value="variado", defaultValue="") String variado, 
 			@RequestParam(value="page", defaultValue="0") Integer page, 
 			@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage, 
 			@RequestParam(value="orderBy", defaultValue="nome") String orderBy, 
 			@RequestParam(value="direction", defaultValue="ASC") String direction) {
 		String nomeDecoded = URL.decodeParam(nome);
-		List<Integer> ids = URL.decodeIntList(categorias);
+		List<Integer> ids = URL.decodeIntList(variado);
 		Page<ProdutoVariado> list = service.search(nomeDecoded, ids, page, linesPerPage, orderBy, direction);
 		Page<ProdutoVariadoDTO> listDto = list.map(obj -> new ProdutoVariadoDTO(obj));  
 		return ResponseEntity.ok().body(listDto);
-
 	}
 	
 }

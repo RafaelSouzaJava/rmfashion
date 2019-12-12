@@ -7,12 +7,16 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.rafael.rmfashion.domain.CategoriaFeminino;
 import com.rafael.rmfashion.domain.ProdutoFeminino;
 import com.rafael.rmfashion.dto.ProdutoFemininoDTO;
 import com.rafael.rmfashion.dto.ProdutoFemininoNewDTO;
+import com.rafael.rmfashion.repositories.CategoriaFemininoRepository;
 import com.rafael.rmfashion.repositories.ProdutoFemininoRepository;
 import com.rafael.rmfashion.services.exceptions.DataIntegrityException;
 import com.rafael.rmfashion.services.exceptions.ObjectNotFoundException;
@@ -23,7 +27,8 @@ public class ProdutoFemininoService {
 	@Autowired
 	private ProdutoFemininoRepository repository;
 	
-
+	@Autowired
+	private CategoriaFemininoRepository categoriaFemininoRepository;
 	
 
 	public ProdutoFeminino buscar(Integer id) {
@@ -68,7 +73,11 @@ public class ProdutoFemininoService {
 		return produtoFeminino;
 	}
 	
-	
+	public Page<ProdutoFeminino> search(String nome, List<Integer> ids, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		List<CategoriaFeminino> categoriasFeminino = categoriaFemininoRepository.findAllById(ids);
+		return repository.findDistinctByNomeContainingAndCategoriasFemininoIn(nome, categoriasFeminino, pageRequest);
+	}
 	
 	
 	private void updateProduto(ProdutoFeminino newObj, ProdutoFeminino obj) {

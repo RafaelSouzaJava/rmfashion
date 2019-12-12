@@ -2,22 +2,24 @@ package com.rafael.rmfashion.resources;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.rafael.rmfashion.domain.ProdutoMasculino;
 import com.rafael.rmfashion.dto.ProdutoMasculinoDTO;
 import com.rafael.rmfashion.dto.ProdutoMasculinoNewDTO;
+import com.rafael.rmfashion.resources.utils.URL;
 import com.rafael.rmfashion.services.ProdutoMasculinoService;
 
 @RestController
@@ -57,13 +59,21 @@ public class ProdutoMasculinoResource {
 		return ResponseEntity.noContent().build();	
 	}
 	
-	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<ProdutoMasculinoDTO>> buscarTodos(){
-			List<ProdutoMasculino> list = service.buscarTodos();
-			List<ProdutoMasculinoDTO> listDto = list.stream().map(obj -> new ProdutoMasculinoDTO(obj)).collect(Collectors.toList());
-			return ResponseEntity.ok().body(listDto);		
+	
+	
+	@RequestMapping(method=RequestMethod.GET)
+	public ResponseEntity<Page<ProdutoMasculinoDTO>> findPage(
+			@RequestParam(value="nome", defaultValue="") String nome, 
+			@RequestParam(value="categoriaSexShop", defaultValue="") String categoriasMasculino, 
+			@RequestParam(value="page", defaultValue="0") Integer page, 
+			@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage, 
+			@RequestParam(value="orderBy", defaultValue="nome") String orderBy, 
+			@RequestParam(value="direction", defaultValue="ASC") String direction) {
+		String nomeDecoded = URL.decodeParam(nome);
+		List<Integer> ids = URL.decodeIntList(categoriasMasculino);
+		Page<ProdutoMasculino> list = service.search(nomeDecoded, ids, page, linesPerPage, orderBy, direction);
+		Page<ProdutoMasculinoDTO> listDto = list.map(obj -> new ProdutoMasculinoDTO(obj));  
+		return ResponseEntity.ok().body(listDto);
 	}
-	
-	
 	
 }

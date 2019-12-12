@@ -72,11 +72,12 @@ public class ProdutoVariadoService {
 		return produtoVariado;
 	}
 	
+	
+	
 	public Page<ProdutoVariado> search(String nome, List<Integer> ids, Integer page, Integer linesPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
-		List<Variado> categorias = variadoRepository.findAllById(ids);
-		return repository.findDistinctByNomeContainingAndCategoriasIn(nome, categorias, pageRequest);	
-
+		List<Variado> variado = variadoRepository.findAllById(ids);
+		return repository.findDistinctByNomeContainingAndVariadosIn(nome, variado, pageRequest);
 	}
 	
 	private void updateProduto(ProdutoVariado newObj, ProdutoVariado obj) {

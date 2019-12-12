@@ -7,12 +7,16 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.rafael.rmfashion.domain.CategoriaSexShop;
 import com.rafael.rmfashion.domain.ProdutoSexShop;
 import com.rafael.rmfashion.dto.ProdutoSexShopDTO;
 import com.rafael.rmfashion.dto.ProdutoSexShopNewDTO;
+import com.rafael.rmfashion.repositories.CategoriaSexShopRepository;
 import com.rafael.rmfashion.repositories.ProdutoSexShopRepository;
 import com.rafael.rmfashion.services.exceptions.DataIntegrityException;
 import com.rafael.rmfashion.services.exceptions.ObjectNotFoundException;
@@ -22,6 +26,9 @@ public class ProdutoSexShopService {
 	
 	@Autowired
 	private ProdutoSexShopRepository repository;
+	
+	@Autowired
+	private CategoriaSexShopRepository categoriaSexShopRepository;
 
 	public ProdutoSexShop buscar(Integer id) {
 		Optional<ProdutoSexShop> obj = repository.findById(id);
@@ -63,6 +70,12 @@ public class ProdutoSexShopService {
 		CategoriaSexShop catMasc = new CategoriaSexShop(objDto.getCategoriaSexShopId(), null);
 		produtoSexShop.getCategoriaSexShop().add(catMasc);
 		return produtoSexShop;
+	}
+	
+	public Page<ProdutoSexShop> search(String nome, List<Integer> ids, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		List<CategoriaSexShop> categoriaSexShop = categoriaSexShopRepository.findAllById(ids);
+		return repository.findDistinctByNomeContainingAndCategoriaSexShopIn(nome, categoriaSexShop, pageRequest);
 	}
 	
 	private void updateProduto(ProdutoSexShop newObj, ProdutoSexShop obj) {
